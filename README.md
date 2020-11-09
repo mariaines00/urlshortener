@@ -17,8 +17,7 @@ probability of finding a working short url.
 Your solution must support:
 1. Generating a short url from a long url
 2. Redirecting a short url to a long url within 10 ms.
-3. Listing the number of times a short url has been accessed in the last 24 hours, past
-week and all time.
+3. Listing the number of times a short url has been accessed in the last 24 hours, past week and all time.
 4. Persistence (data must survive computer restarts)
 
 Shortcuts
