@@ -19,7 +19,8 @@ func main() {
 
 	r.Use(loggingMiddleware)
 
-	r.HandleFunc("/", index)
+	r.HandleFunc("/", index).Methods("GET")
+	r.HandleFunc("/{key}", handlers.Redirect)
 	r.HandleFunc("/short", handlers.Shortener).Methods("GET")
 	r.HandleFunc("/short/new", handlers.RegisterNewShortener).Methods("POST")
 
@@ -52,7 +53,7 @@ func main() {
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
-	http.Redirect(w, r, "/new", http.StatusSeeOther)
+	http.Redirect(w, r, "/short", http.StatusSeeOther)
 }
 
 func loggingMiddleware(next http.Handler) http.Handler {
