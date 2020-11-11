@@ -21,7 +21,7 @@ func main() {
 
 	r.HandleFunc("/", index).Methods("GET")
 	r.HandleFunc("/short", handlers.Shortener).Methods("GET")
-	r.HandleFunc("/short/new", handlers.RegisterNewShortener).Methods("POST")
+	r.HandleFunc("/short/new", handlers.RegisterShortLink).Methods("POST")
 	r.HandleFunc("/{key}", handlers.Redirect)
 
 	server := &http.Server{
