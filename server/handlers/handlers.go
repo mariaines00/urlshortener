@@ -18,5 +18,6 @@ func RegisterNewShortener(w http.ResponseWriter, req *http.Request) {
 
 // Redirect sends it woosh
 func Redirect(w http.ResponseWriter, req *http.Request) {
+	w.WriteHeader(http.StatusNotFound)
 	//http.Redirect(w, req, string(url), http.StatusMovedPermanently)
 }

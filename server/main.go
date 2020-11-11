@@ -20,9 +20,9 @@ func main() {
 	r.Use(loggingMiddleware)
 
 	r.HandleFunc("/", index).Methods("GET")
-	r.HandleFunc("/{key}", handlers.Redirect)
 	r.HandleFunc("/short", handlers.Shortener).Methods("GET")
 	r.HandleFunc("/short/new", handlers.RegisterNewShortener).Methods("POST")
+	r.HandleFunc("/{key}", handlers.Redirect)
 
 	server := &http.Server{
 		Addr:         "0.0.0.0:3000", //TODO: use env vars
