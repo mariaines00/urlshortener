@@ -3,25 +3,24 @@ package models
 import (
 	"errors"
 	"net/http"
+
+	"../shared"
 )
 
-type Link struct {
-}
-
-func RegisterShortLink(req *http.Request) (Link, error) {
-	l := Link{}
+func RegisterShortLink(req *http.Request) (shared.Entry, error) {
+	e := shared.Entry{}
 
 	url := req.FormValue("url")
 	if url == "" {
-		return l, errors.New("400. Bad Request")
+		return e, errors.New("400. Bad Request")
 	}
 
 	//TODO: boltdb operations
 
-	return l, nil
+	return e, nil
 }
 
-func RemoveShortLink(req *http.Request) (Link, error) {
-	l := Link{}
-	return l, nil
+func RemoveShortLink(req *http.Request) (shared.Entry, error) {
+	e := shared.Entry{}
+	return e, nil
 }

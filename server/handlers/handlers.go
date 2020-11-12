@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"../config"
+	"../models"
 )
 
 // Shortener is the entrypoint
@@ -14,7 +15,7 @@ func Shortener(w http.ResponseWriter, req *http.Request) {
 // RegisterShortLink is responsible for adding new entries to the db
 func RegisterShortLink(w http.ResponseWriter, req *http.Request) {
 
-	l, err := RegisterShortLink(req)
+	l, err := models.RegisterShortLink(req)
 	if err != nil {
 		http.Error(w, http.StatusText(406), http.StatusNotAcceptable)
 		return
