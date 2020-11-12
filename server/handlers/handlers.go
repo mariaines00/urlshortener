@@ -7,6 +7,8 @@ import (
 	"../models"
 )
 
+// I can try the pattern to return the handler/controler with the db connection
+
 // Shortener is the entrypoint
 func Shortener(w http.ResponseWriter, req *http.Request) {
 	config.TPL.ExecuteTemplate(w, "shorten.gohtml", nil)
@@ -14,14 +16,13 @@ func Shortener(w http.ResponseWriter, req *http.Request) {
 
 // RegisterShortLink is responsible for adding new entries to the db
 func RegisterShortLink(w http.ResponseWriter, req *http.Request) {
-
-	l, err := models.RegisterShortLink(req)
+	e, err := models.RegisterShortLink(req)
 	if err != nil {
 		http.Error(w, http.StatusText(406), http.StatusNotAcceptable)
 		return
 	}
 
-	config.TPL.ExecuteTemplate(w, "success.gohtml", l)
+	config.TPL.ExecuteTemplate(w, "success.gohtml", e)
 }
 
 // Redirect sends it woosh

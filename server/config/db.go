@@ -19,7 +19,8 @@ var DB *bolt.DB
 
 // Init starts the database and created the server if needed
 func Init(path string) error {
-	DB, err := bolt.Open(path, 0644, &bolt.Options{Timeout: 1 * time.Second})
+	var err error
+	DB, err = bolt.Open(path, 0600, &bolt.Options{Timeout: 1 * time.Second})
 	if err != nil {
 		return err
 	}
@@ -27,6 +28,7 @@ func Init(path string) error {
 		if _, err := tx.CreateBucketIfNotExists(shortenedBucket); err != nil {
 			return err
 		}
+		log.Println("Created bucket", string(shortenedBucket))
 		return err
 	})
 	if err != nil {
@@ -67,7 +69,7 @@ func CreateEntry(id string, entry shared.Entry) error {
 		return err
 	}
 
-	err = DB.Update(func(tx *bolt.Tx) error {
+	return DB.Update(func(tx *bolt.Tx) error {
 		bucket := tx.Bucket(shortenedBucket)
 		if raw := bucket.Get([]byte(id)); raw != nil {
 			return errors.New("entry already exists")
@@ -77,8 +79,6 @@ func CreateEntry(id string, entry shared.Entry) error {
 		}
 		return nil
 	})
-
-	return err
 }
 
 // DeleteEntry deleted an entry by a given ID and returns an error
