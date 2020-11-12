@@ -19,6 +19,7 @@ func RegisterShortLink(req *http.Request) (shared.Entry, error) {
 		return e, errors.New("400. Bad Request")
 	}
 
+	//mac := hmac.New(sha512.New, TODO:
 	h := sha1.New()
 	h.Write([]byte(url))
 	bs := h.Sum(nil)

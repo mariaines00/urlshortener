@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
 
 	"../config"
@@ -18,6 +19,7 @@ func Shortener(w http.ResponseWriter, req *http.Request) {
 func RegisterShortLink(w http.ResponseWriter, req *http.Request) {
 	e, err := models.RegisterShortLink(req)
 	if err != nil {
+		log.Println(err)
 		http.Error(w, http.StatusText(406), http.StatusNotAcceptable)
 		return
 	}
