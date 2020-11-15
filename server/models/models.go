@@ -23,7 +23,7 @@ func RegisterShortLink(req *http.Request) (shared.Entry, error) {
 	h := sha1.New()
 	h.Write([]byte(url))
 	bs := h.Sum(nil)
-	id := fmt.Sprintf("%x\n", bs)
+	id := fmt.Sprintf("%x", bs)
 
 	e.Path = fmt.Sprintf("%s/%s", req.Host, id)
 	e.OutsideAddr = url
@@ -40,5 +40,15 @@ func RegisterShortLink(req *http.Request) (shared.Entry, error) {
 // RemoveShortLink also does things
 func RemoveShortLink(req *http.Request) (shared.Entry, error) {
 	e := shared.Entry{}
+	return e, nil
+}
+
+// GetLongLink returns the entry corresponding to the long URL
+func GetLongLink(id string) (shared.Entry, error) {
+	e, err := config.GetEntryByID(id)
+	if err != nil {
+		return e, err
+	}
+
 	return e, nil
 }
