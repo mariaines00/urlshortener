@@ -21,6 +21,7 @@ func main() {
 	r.Use(loggingMiddleware)
 
 	r.HandleFunc("/", index).Methods("GET")
+	r.HandleFunc("/favicon.ico", http.NotFound)
 	r.HandleFunc("/short", handlers.Shortener).Methods("GET")
 	r.HandleFunc("/short/new", handlers.RegisterShortLink).Methods("POST")
 	r.HandleFunc("/{key}", handlers.Redirect)
