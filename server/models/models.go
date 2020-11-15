@@ -1,27 +1,54 @@
 package models
 
 import (
+	"crypto/sha1"
 	"errors"
+	"fmt"
 	"net/http"
+	"time"
+
+	"../config"
+	"../shared"
 )
 
-type Link struct {
-}
-
-func RegisterShortLink(req *http.Request) (Link, error) {
-	l := Link{}
-
+// RegisterShortLink does things alright
+func RegisterShortLink(req *http.Request) (shared.Entry, error) {
+	e := shared.Entry{}
 	url := req.FormValue("url")
 	if url == "" {
-		return l, errors.New("400. Bad Request")
+		return e, errors.New("400. Bad Request")
 	}
 
-	//TODO: boltdb operations
+	//mac := hmac.New(sha512.New, TODO:
+	h := sha1.New()
+	h.Write([]byte(url))
+	bs := h.Sum(nil)
+	id := fmt.Sprintf("%x", bs)
 
-	return l, nil
+	e.Path = fmt.Sprintf("%s/%s", req.Host, id)
+	e.OutsideAddr = url
+	e.CreatedAt = time.Now()
+
+	err := config.CreateEntry(id, e)
+	if err != nil {
+		return e, err
+	}
+
+	return e, nil
 }
 
-func RemoveShortLink(req *http.Request) (Link, error) {
-	l := Link{}
-	return l, nil
+// RemoveShortLink also does things
+func RemoveShortLink(req *http.Request) (shared.Entry, error) {
+	e := shared.Entry{}
+	return e, nil
+}
+
+// GetLongLink returns the entry corresponding to the long URL
+func GetLongLink(id string) (shared.Entry, error) {
+	e, err := config.GetEntryByID(id)
+	if err != nil {
+		return *e, err
+	}
+
+	return *e, nil
 }

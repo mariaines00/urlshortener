@@ -10,6 +10,7 @@ import (
 
 	"github.com/gorilla/mux"
 
+	"./config"
 	"./handlers" //https://github.com/mariaines00/urlshortener/server/handlers
 )
 
@@ -20,6 +21,7 @@ func main() {
 	r.Use(loggingMiddleware)
 
 	r.HandleFunc("/", index).Methods("GET")
+	r.HandleFunc("/favicon.ico", http.NotFound)
 	r.HandleFunc("/short", handlers.Shortener).Methods("GET")
 	r.HandleFunc("/short/new", handlers.RegisterShortLink).Methods("POST")
 	r.HandleFunc("/{key}", handlers.Redirect)
@@ -34,6 +36,12 @@ func main() {
 
 	go func() {
 		log.Println("Server started at port 3000") // TODO: use env vars
+
+		err := config.Init("../database/entries.db")
+		if err != nil {
+			log.Fatalln(err)
+		}
+
 		if err := server.ListenAndServe(); err != nil {
 			log.Println(err)
 		}
