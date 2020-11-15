@@ -29,6 +29,12 @@ func RegisterShortLink(w http.ResponseWriter, req *http.Request) {
 
 // Redirect sends it woosh
 func Redirect(w http.ResponseWriter, req *http.Request) {
-	w.WriteHeader(http.StatusNotFound)
-	//http.Redirect(w, req, string(url), http.StatusMovedPermanently)
+	e, err := models.GetLongLink(req.RequestURI[1:])
+	if err != nil {
+		log.Println(err)
+		http.Error(w, http.StatusText(500), http.StatusInternalServerError)
+		return
+	}
+
+	http.Redirect(w, req, e.OutsideAddr, http.StatusMovedPermanently)
 }

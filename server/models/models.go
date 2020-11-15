@@ -47,8 +47,8 @@ func RemoveShortLink(req *http.Request) (shared.Entry, error) {
 func GetLongLink(id string) (shared.Entry, error) {
 	e, err := config.GetEntryByID(id)
 	if err != nil {
-		return e, err
+		return *e, err
 	}
 
-	return e, nil
+	return *e, nil
 }

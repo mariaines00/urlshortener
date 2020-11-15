@@ -6,6 +6,6 @@ import "time"
 type Entry struct {
 	Path                  string
 	OutsideAddr           string
-	Hits                  int       `json:",omitempty"`
-	CreatedAt, LastAccess time.Time `json:",omitempty"`
+	Hits                  int
+	CreatedAt, LastAccess time.Time
 }

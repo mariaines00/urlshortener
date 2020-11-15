@@ -3,6 +3,7 @@ package config
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"log"
 	"time"
 
@@ -48,7 +49,8 @@ func Close() error {
 func GetEntryByID(id string) (*shared.Entry, error) {
 	raw := []byte{}
 	err := DB.View(func(tx *bolt.Tx) error {
-		raw = tx.Bucket(shortenedBucket).Get([]byte(id))
+		bucket := tx.Bucket(shortenedBucket)
+		raw = bucket.Get([]byte(id))
 		if raw == nil {
 			return errors.New("Nothing there")
 		}
@@ -95,4 +97,26 @@ func DeleteEntry(id string) error {
 		return nil
 	})
 	return err
+}
+
+func GetAll() ([]shared.Entry, error) {
+	a := []shared.Entry{}
+
+	err := DB.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket(shortenedBucket)
+		c := b.Cursor()
+
+		for k, v := c.First(); k != nil; k, v = c.Next() {
+			e := shared.Entry{}
+			_ = json.Unmarshal(v, &e)
+			a = append(a, e)
+		}
+		return nil
+	})
+
+	fmt.Println(a)
+	if err != nil {
+		return nil, err
+	}
+	return a, nil
 }
