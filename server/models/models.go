@@ -1,15 +1,20 @@
 package models
 
 import (
-	"crypto/sha1"
 	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 
 	"../config"
 	"../shared"
+)
+
+const (
+	alphabet    = "23456789bcdfghjkmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ-_"
+	alphabetLen = len(alphabet)
 )
 
 // RegisterShortLink does things alright
@@ -20,11 +25,8 @@ func RegisterShortLink(req *http.Request) (shared.Entry, error) {
 		return e, errors.New("400. Bad Request")
 	}
 
-	//mac := hmac.New(sha512.New, TODO:
-	h := sha1.New()
-	h.Write([]byte(url))
-	bs := h.Sum(nil)
-	id := fmt.Sprintf("%x", bs)
+	index := dbSequence() + 1
+	id := encode(index)
 
 	e.Path = fmt.Sprintf("%s/%s", req.Host, id)
 	e.OutsideAddr = url
@@ -59,4 +61,29 @@ func IncreaseHits(id string) error {
 func isValidURL(input string) bool {
 	u, err := url.ParseRequestURI(input)
 	return err == nil && u.Scheme != "" && u.Host != ""
+}
+
+// dbSequence returns the current db index(self incremental)
+func dbSequence() int {
+	n, _ := config.GetSequence()
+	return n
+}
+
+//encode takes an ID and turns it into a short string
+// based on https://stackoverflow.com/questions/742013/how-do-i-create-a-url-shortener#742047
+func encode(n int) string {
+	sb := strings.Builder{}
+	for n > 0 {
+		sb.WriteByte(alphabet[n%alphabetLen])
+		n = n / alphabetLen
+	}
+	return sb.String()
+}
+
+//decode takes a string and turns it into an ID
+func decode(s string) (n int) {
+	for _, r := range s {
+		n = n*alphabetLen + strings.IndexRune(alphabet, r)
+	}
+	return
 }

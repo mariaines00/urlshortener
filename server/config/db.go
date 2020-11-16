@@ -1,6 +1,7 @@
 package config
 
 import (
+	"encoding/binary"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -26,7 +27,12 @@ func Init(path string) error {
 		return err
 	}
 	err = DB.Update(func(tx *bolt.Tx) error {
-		if _, err := tx.CreateBucketIfNotExists(shortenedBucket); err != nil {
+		bucket, err := tx.CreateBucketIfNotExists(shortenedBucket)
+		if err != nil {
+			return err
+		}
+		err = bucket.SetSequence(1000)
+		if err != nil {
 			return err
 		}
 		log.Println("Created bucket", string(shortenedBucket))
@@ -140,4 +146,26 @@ func IncreaseHits(id string) error {
 		}
 		return nil
 	})
+}
+
+/* Helpers */
+
+// GetSequence return the current auto-incremental id for the db
+func GetSequence() (int, error) {
+	n := 0
+	err := DB.View(func(tx *bolt.Tx) error {
+		bucket := tx.Bucket(shortenedBucket)
+		n64 := bucket.Sequence()
+		n = int(n64)
+		return nil
+	})
+
+	return n, err
+}
+
+// itob returns an 8-byte big endian representation of v.
+func itob(v int) []byte {
+	b := make([]byte, 8)
+	binary.BigEndian.PutUint64(b, uint64(v))
+	return b
 }
