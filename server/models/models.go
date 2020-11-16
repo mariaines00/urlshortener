@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"net/url"
 	"time"
 
 	"../config"
@@ -15,7 +16,7 @@ import (
 func RegisterShortLink(req *http.Request) (shared.Entry, error) {
 	e := shared.Entry{}
 	url := req.FormValue("url")
-	if url == "" {
+	if url == "" || !isValidURL(url) {
 		return e, errors.New("400. Bad Request")
 	}
 
@@ -50,4 +51,12 @@ func GetLongLink(id string) (shared.Entry, error) {
 // IncreaseHits calls the db function to update the hits counter
 func IncreaseHits(id string) error {
 	return config.IncreaseHits(id)
+}
+
+/* Helpers */
+
+// isValidURL returns false if the provided input is not a url
+func isValidURL(input string) bool {
+	u, err := url.ParseRequestURI(input)
+	return err == nil && u.Scheme != "" && u.Host != ""
 }
