@@ -99,7 +99,7 @@ func DeleteEntry(id string) error {
 	return err
 }
 
-func GetAll() ([]shared.Entry, error) {
+func getAll() ([]shared.Entry, error) {
 	a := []shared.Entry{}
 
 	err := DB.View(func(tx *bolt.Tx) error {
@@ -119,4 +119,25 @@ func GetAll() ([]shared.Entry, error) {
 		return nil, err
 	}
 	return a, nil
+}
+
+// IncreaseHits increments the hits counter and sets the lat acessed time
+func IncreaseHits(id string) error {
+	entry, err := GetEntryByID(id)
+	if err != nil {
+		return err
+	}
+	entry.Hits++
+	entry.LastAccess = time.Now().UTC()
+	raw, err := json.Marshal(entry)
+	if err != nil {
+		return err
+	}
+	return DB.Update(func(tx *bolt.Tx) error {
+		bucket := tx.Bucket(shortenedBucket)
+		if err := bucket.Put([]byte(id), raw); err != nil {
+			return err
+		}
+		return nil
+	})
 }

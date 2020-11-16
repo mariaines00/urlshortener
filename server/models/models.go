@@ -37,12 +37,6 @@ func RegisterShortLink(req *http.Request) (shared.Entry, error) {
 	return e, nil
 }
 
-// RemoveShortLink also does things
-func RemoveShortLink(req *http.Request) (shared.Entry, error) {
-	e := shared.Entry{}
-	return e, nil
-}
-
 // GetLongLink returns the entry corresponding to the long URL
 func GetLongLink(id string) (shared.Entry, error) {
 	e, err := config.GetEntryByID(id)
@@ -51,4 +45,9 @@ func GetLongLink(id string) (shared.Entry, error) {
 	}
 
 	return *e, nil
+}
+
+// IncreaseHits calls the db function to update the hits counter
+func IncreaseHits(id string) error {
+	return config.IncreaseHits(id)
 }
