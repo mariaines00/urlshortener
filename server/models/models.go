@@ -24,7 +24,7 @@ func RegisterShortLink(host string, url string) (shared.Entry, error) {
 		return e, errors.New("400. Bad Request")
 	}
 
-	index := dbSequence() + 1
+	index := dbNextSequence()
 	id := encode(index)
 
 	e.Path = fmt.Sprintf("%s/%s", host, id)
@@ -40,8 +40,8 @@ func RegisterShortLink(host string, url string) (shared.Entry, error) {
 }
 
 // GetLongLink returns the entry corresponding to the long URL
-func GetLongLink(id string) (shared.Entry, error) {
-	e, err := config.GetEntryByID(id)
+func GetLongLink(path string) (shared.Entry, error) {
+	e, err := config.GetEntryByID(path)
 	if err != nil {
 		return *e, err
 	}
@@ -50,8 +50,8 @@ func GetLongLink(id string) (shared.Entry, error) {
 }
 
 // IncreaseHits calls the db function to update the hits counter
-func IncreaseHits(id string) error {
-	return config.IncreaseHits(id)
+func IncreaseHits(path string) error {
+	return config.IncreaseHits(path)
 }
 
 /* Helpers */
@@ -62,9 +62,10 @@ func isValidURL(input string) bool {
 	return err == nil && u.Scheme != "" && u.Host != ""
 }
 
-// dbSequence returns the current db index(self incremental)
-func dbSequence() int {
+// dbNextSequence returns the next db index(self incremental)
+func dbNextSequence() int {
 	n, _ := config.GetSequence()
+	n++
 	return n
 }
 

@@ -31,14 +31,15 @@ func RegisterShortLink(w http.ResponseWriter, req *http.Request) {
 
 // Redirect sends it woosh
 func Redirect(w http.ResponseWriter, req *http.Request) {
-	id := req.RequestURI[1:]
-	e, err := models.GetLongLink(id)
+	path := req.RequestURI[1:]
+	e, err := models.GetLongLink(path)
+
 	if err != nil {
 		log.Println(err)
 		http.Error(w, http.StatusText(500), http.StatusInternalServerError)
 		return
 	}
-	err = models.IncreaseHits(id)
+	err = models.IncreaseHits(path)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, http.StatusText(500), http.StatusInternalServerError)

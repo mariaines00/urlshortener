@@ -82,6 +82,7 @@ func CreateEntry(id string, entry shared.Entry) error {
 		if raw := bucket.Get([]byte(id)); raw != nil {
 			return errors.New("entry already exists")
 		}
+		_, _ = bucket.NextSequence() //updates the counter but discard the value
 		if err := bucket.Put([]byte(id), entryRaw); err != nil {
 			return err
 		}
