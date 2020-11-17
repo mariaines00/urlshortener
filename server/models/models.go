@@ -1,8 +1,8 @@
 package models
 
 import (
-	"errors"
 	"fmt"
+	"net/http"
 	"net/url"
 	"strings"
 	"time"
@@ -21,7 +21,7 @@ func RegisterShortLink(host string, url string) (shared.Entry, error) {
 	e := shared.Entry{}
 
 	if url == "" || !isValidURL(url) {
-		return e, errors.New("400. Bad Request")
+		return e, shared.NewHTTPError(nil, http.StatusBadRequest, "Invalid parameters")
 	}
 
 	index := dbNextSequence()
@@ -42,11 +42,7 @@ func RegisterShortLink(host string, url string) (shared.Entry, error) {
 // GetLongLink returns the entry corresponding to the long URL
 func GetLongLink(path string) (shared.Entry, error) {
 	e, err := config.GetEntryByID(path)
-	if err != nil {
-		return *e, err
-	}
-
-	return *e, nil
+	return *e, err
 }
 
 // IncreaseHits calls the db function to update the hits counter

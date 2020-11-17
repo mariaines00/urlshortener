@@ -3,8 +3,6 @@ package config
 import (
 	"encoding/binary"
 	"encoding/json"
-	"errors"
-	"fmt"
 	"log"
 	"time"
 
@@ -53,38 +51,40 @@ func Close() error {
 
 // GetEntryByID returns a entry and an error by the shorted ID
 func GetEntryByID(id string) (*shared.Entry, error) {
+	entry := shared.Entry{}
 	raw := []byte{}
+
 	err := DB.View(func(tx *bolt.Tx) error {
 		bucket := tx.Bucket(shortenedBucket)
 		raw = bucket.Get([]byte(id))
 		if raw == nil {
-			return errors.New("Nothing there")
+			return shared.NewHTTPError(nil, 404, "Entry does not exist")
 		}
 		return nil
 	})
+
 	if err != nil {
-		return nil, err
+		return &entry, err
 	}
 
-	var entry *shared.Entry
-	return entry, json.Unmarshal(raw, &entry)
+	return &entry, json.Unmarshal(raw, &entry)
 }
 
 // CreateEntry creates an entry by a given ID and returns an error
 func CreateEntry(id string, entry shared.Entry) error {
 	entryRaw, err := json.Marshal(entry)
 	if err != nil {
-		return err
+		return shared.NewHTTPError(err, 500, "Something went wrong")
 	}
 
 	return DB.Update(func(tx *bolt.Tx) error {
 		bucket := tx.Bucket(shortenedBucket)
 		if raw := bucket.Get([]byte(id)); raw != nil {
-			return errors.New("entry already exists")
+			return shared.NewHTTPError(err, 400, "Entry Already Exists")
 		}
 		_, _ = bucket.NextSequence() //updates the counter but discard the value
 		if err := bucket.Put([]byte(id), entryRaw); err != nil {
-			return err
+			return shared.NewHTTPError(err, 500, "Something went wrong")
 		}
 		return nil
 	})
@@ -96,10 +96,10 @@ func DeleteEntry(id string) error {
 		bucket := tx.Bucket(shortenedBucket)
 
 		if bucket.Get([]byte(id)) == nil {
-			return errors.New("entry already deleted")
+			return shared.NewHTTPError(nil, 404, "Entry does not exist")
 		}
 		if err := bucket.Delete([]byte(id)); err != nil {
-			return err
+			return shared.NewHTTPError(err, 500, "Something went wrong")
 		}
 		return nil
 	})
@@ -121,7 +121,6 @@ func getAll() ([]shared.Entry, error) {
 		return nil
 	})
 
-	fmt.Println(a)
 	if err != nil {
 		return nil, err
 	}
@@ -138,12 +137,12 @@ func IncreaseHits(id string) error {
 	entry.LastAccess = time.Now().UTC()
 	raw, err := json.Marshal(entry)
 	if err != nil {
-		return err
+		return shared.NewHTTPError(err, 500, "Something went wrong")
 	}
 	return DB.Update(func(tx *bolt.Tx) error {
 		bucket := tx.Bucket(shortenedBucket)
 		if err := bucket.Put([]byte(id), raw); err != nil {
-			return err
+			return shared.NewHTTPError(err, 500, "Something went wrong")
 		}
 		return nil
 	})
@@ -161,7 +160,7 @@ func GetSequence() (int, error) {
 		return nil
 	})
 
-	return n, err
+	return n, shared.NewHTTPError(err, 500, "Something went wrong")
 }
 
 // itob returns an 8-byte big endian representation of v.

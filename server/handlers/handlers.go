@@ -6,6 +6,7 @@ import (
 
 	"../config"
 	"../models"
+	"../shared"
 )
 
 // I can try the pattern to return the handler/controler with the db connection
@@ -20,9 +21,9 @@ func RegisterShortLink(w http.ResponseWriter, req *http.Request) {
 	remoteURL := req.FormValue("url")
 	e, err := models.RegisterShortLink(req.Host, remoteURL)
 
-	if err != nil {
-		log.Println(err)
-		http.Error(w, http.StatusText(406), http.StatusNotAcceptable)
+	if err, ok := err.(*shared.HTTPError); ok {
+		log.Println(err.Error())
+		http.Error(w, http.StatusText(err.Status), err.Status)
 		return
 	}
 
@@ -33,16 +34,16 @@ func RegisterShortLink(w http.ResponseWriter, req *http.Request) {
 func Redirect(w http.ResponseWriter, req *http.Request) {
 	path := req.RequestURI[1:]
 	e, err := models.GetLongLink(path)
-
-	if err != nil {
-		log.Println(err)
-		http.Error(w, http.StatusText(500), http.StatusInternalServerError)
+	if err, ok := err.(*shared.HTTPError); ok {
+		log.Println(err.Error())
+		http.Error(w, http.StatusText(err.Status), err.Status)
 		return
 	}
+
 	err = models.IncreaseHits(path)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, http.StatusText(500), http.StatusInternalServerError)
+	if err, ok := err.(*shared.HTTPError); ok {
+		log.Println(err.Error())
+		http.Error(w, http.StatusText(err.Status), err.Status)
 		return
 	}
 
