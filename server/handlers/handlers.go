@@ -17,7 +17,9 @@ func Shortener(w http.ResponseWriter, req *http.Request) {
 
 // RegisterShortLink is responsible for adding new entries to the db
 func RegisterShortLink(w http.ResponseWriter, req *http.Request) {
-	e, err := models.RegisterShortLink(req)
+	remoteURL := req.FormValue("url")
+	e, err := models.RegisterShortLink(req.Host, remoteURL)
+
 	if err != nil {
 		log.Println(err)
 		http.Error(w, http.StatusText(406), http.StatusNotAcceptable)

@@ -3,7 +3,6 @@ package models
 import (
 	"errors"
 	"fmt"
-	"net/http"
 	"net/url"
 	"strings"
 	"time"
@@ -18,9 +17,9 @@ const (
 )
 
 // RegisterShortLink does things alright
-func RegisterShortLink(req *http.Request) (shared.Entry, error) {
+func RegisterShortLink(host string, url string) (shared.Entry, error) {
 	e := shared.Entry{}
-	url := req.FormValue("url")
+
 	if url == "" || !isValidURL(url) {
 		return e, errors.New("400. Bad Request")
 	}
@@ -28,7 +27,7 @@ func RegisterShortLink(req *http.Request) (shared.Entry, error) {
 	index := dbSequence() + 1
 	id := encode(index)
 
-	e.Path = fmt.Sprintf("%s/%s", req.Host, id)
+	e.Path = fmt.Sprintf("%s/%s", host, id)
 	e.OutsideAddr = url
 	e.CreatedAt = time.Now()
 
