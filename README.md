@@ -1,10 +1,9 @@
-# urlshortener-technical-test
+# urlshortener
 
 ### Description
 
 The challenge is to build a HTTP-based RESTful API for managing Short URLs and redirecting
-clients similar to bit.ly or goo.gl. (Be thoughtful that the system must eventually support millions
-of short urls.
+clients similar to bit.ly or goo.gl.
 Please include a README with documentation on how to build, and run and test the system. 
 
 A Short Url:
@@ -27,6 +26,10 @@ Shortcuts
 4. Anything left unspecified is left to your discretion
 ---
 
-## How to run:
-
-## TDB:
+## How to run it locally
+0. have docker and docker-compose installed
+1. clone the repo
+2. navigate to the directory containing the docker-compose.yml file
+3. run docker-compose up -d --build
+4a. Go to the browser on http://localhost:3000 to reach the app
+4b. Use [postman](https://www.getpostman.com/) to reach the endpoints
