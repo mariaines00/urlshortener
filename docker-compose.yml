@@ -1,0 +1,12 @@
+version: '3.7'
+
+services:
+  server:
+    build: server
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    volumes:
+      - type: bind
+        source: ./database/entries.db
+        target: /database/entries.db
