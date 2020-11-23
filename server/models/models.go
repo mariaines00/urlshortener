@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"../config"
-	"../shared"
+	"github.com/mariaines00/urlshortener/config"
+	"github.com/mariaines00/urlshortener/shared"
 )
 
 const (

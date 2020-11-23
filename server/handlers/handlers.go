@@ -4,9 +4,9 @@ import (
 	"log"
 	"net/http"
 
-	"../config"
-	"../models"
-	"../shared"
+	"github.com/mariaines00/urlshortener/config"
+	"github.com/mariaines00/urlshortener/models"
+	"github.com/mariaines00/urlshortener/shared"
 )
 
 // I can try the pattern to return the handler/controler with the db connection
