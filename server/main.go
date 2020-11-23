@@ -10,8 +10,8 @@ import (
 
 	"github.com/gorilla/mux"
 
-	"./config"
-	"./handlers" //https://github.com/mariaines00/urlshortener/server/handlers
+	"github.com/mariaines00/urlshortener/config"
+	"github.com/mariaines00/urlshortener/handlers"
 )
 
 func main() {

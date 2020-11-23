@@ -6,7 +6,7 @@ import (
 	"log"
 	"time"
 
-	"../shared"
+	"github.com/mariaines00/urlshortener/shared"
 
 	"github.com/boltdb/bolt"
 )
