@@ -31,5 +31,5 @@ Shortcuts
 1. clone the repo
 2. navigate to the directory containing the docker-compose.yml file
 3. run docker-compose up -d --build
-4a. Go to the browser on http://localhost:3000 to reach the app
-4b. Use [postman](https://www.getpostman.com/) to reach the endpoints
+4. Go to the browser on http://localhost:3000 to reach the app
+4. Use [postman](https://www.getpostman.com/) to reach the endpoints
